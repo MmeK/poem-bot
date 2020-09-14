@@ -54,12 +54,12 @@ def inlinequery(update, context):
             id=uuid4(),
             title="حافظ",
             input_message_content=InputTextMessageContent(
-                getPoem(getPoemVerseList(query)))),
+                "getPoem(getPoemVerseList(query))")),
         InlineQueryResultArticle(
             id=uuid4(),
             title="تک‌ بیت",
             input_message_content=InputTextMessageContent(
-                getSingleVerse(scraper.article())))]
+                "getSingleVerse(scraper.article())"))]
 
     update.inline_query.answer(results, cache_time=0)
 
