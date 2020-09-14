@@ -4,9 +4,8 @@ from telegram import InlineQueryResultArticle, ParseMode, \
     InputTextMessageContent
 from uuid import uuid4
 import logging
-import mysql.connector
 import random
-from web_scraping import scraper
+from poem_bot.web_scraping import scraper
 import os
 
 PORT = int(os.environ.get('PORT', 5000))
@@ -15,16 +14,6 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
-
-poem_con = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    port=3306,
-    database="ganjoor",
-    password=""
-)
-
-poem_cur = poem_con.cursor(buffered=True)
 
 
 def start(update, context):
@@ -38,15 +27,7 @@ def help_command(update, context):
 
 
 def getPoemVerseList(query):
-    poem_cur.execute(
-        "Select verses.text, verses.poem_id From verses INNER JOIN poems ON verses.poem_id=poems.id Where poems.cat_id=24")
-    verses = poem_cur.fetchall()
-    poems_list = [list(verse).pop(1) for verse in verses]
-    first_poem, last_poem = min(poems_list), max(poems_list)
-    poem_range = random.randint(first_poem, last_poem)
-    poem = list(filter(lambda x: x[1] == poem_range, verses))
-    poem = [str(list(verse).pop(0)) for verse in poem]
-    return poem
+    return query
 
 
 def getPoem(poem):
