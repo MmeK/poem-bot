@@ -5,7 +5,7 @@ from telegram import InlineQueryResultArticle, ParseMode, \
 from uuid import uuid4
 import logging
 import random
-from poem_bot.web_scraping import scraper
+from web_scraping import scraper
 import os
 
 PORT = int(os.environ.get('PORT', 5000))
