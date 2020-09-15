@@ -5,6 +5,7 @@ from telegram import InlineQueryResultArticle, ParseMode, \
 from uuid import uuid4
 import logging
 import random
+import psycopg2
 from web_scraping import scraper
 import os
 
@@ -14,6 +15,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
+connection, cursor = None, None
 
 
 def start(update, context):
@@ -26,24 +28,17 @@ def help_command(update, context):
     update.message.reply_text('Help!')
 
 
-def getPoemVerseList(query):
-    return query
-
-
-def getPoem(poem):
-    poem_string = ""
-    i = 1
-    for verse in poem:
-        poem_string += verse+"\n"
-        poem_string += "\n" if i % 2 == 0 else ""
-        i += 1
-    return str(poem_string)
+def getPoem(poet):
+    cursor.execute(
+        '''select poems.poem_text from poems JOIN poets ON poems.poet_id=poets.id
+        where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
+        And poets.poet_name= '%s'  order by poems.id limit 1''', (poet,))
+    return str(cursor.fetchone())
 
 
 def getSingleVerse(poem):
-    i = random.randint(0, int(len(poem)/2)-1)
-    poem_string = poem[i*2]+"\n"+poem[i*2+1]
-    return str(poem_string)
+    verses = (poem.split("\n"))
+    return str(verses[random.randint(0, len(verses)-1)])
 
 
 def inlinequery(update, context):
@@ -52,14 +47,14 @@ def inlinequery(update, context):
     results = [
         InlineQueryResultArticle(
             id=uuid4(),
-            title="حافظ",
+            title="شعر",
             input_message_content=InputTextMessageContent(
-                "getPoem(getPoemVerseList(query))")),
+                getPoem((query)))),
         InlineQueryResultArticle(
             id=uuid4(),
             title="تک‌ بیت",
             input_message_content=InputTextMessageContent(
-                "getSingleVerse(scraper.article())"))]
+                getSingleVerse(getPoem(query))))]
 
     update.inline_query.answer(results, cache_time=0)
 
@@ -70,6 +65,15 @@ def error(update, context):
 
 
 def main():
+
+    connection = psycopg2.connect(user="lkwimsvzhvuwnn",
+                                  password="dec3c3c5f27e5384d8962a1211f97b1988254c780be8d233dd9653743df2b581",
+                                  host="ec2-52-200-134-180.compute-1.amazonaws.com",
+                                  port="5432",
+                                  database="d1oveilt1fgmif")
+
+    cursor = connection.cursor()
+
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
