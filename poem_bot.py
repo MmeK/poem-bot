@@ -65,8 +65,11 @@ def getPoem(poet):
 
 
 def getSingleVerse(poem):
-    verses = (poem.split("\n"))
-    return str(verses[random.randint(0, len(verses)-1)])
+    try:
+        verses = (poem.split("\n"))
+        return str(verses[random.randint(0, len(verses)-1)])
+    except Exception:
+        poem
 
 
 def inlinequery(update, context):
