@@ -71,17 +71,18 @@ def getSingleVerse(poem):
 def inlinequery(update, context):
     """Handle the inline query."""
     query = update.inline_query.query
+    poem = getPoem((query))
     results = [
         InlineQueryResultArticle(
             id=uuid4(),
             title="شعر",
             input_message_content=InputTextMessageContent(
-                getPoem((query)))),
+                poem)),
         InlineQueryResultArticle(
             id=uuid4(),
             title="تک‌ بیت",
             input_message_content=InputTextMessageContent(
-                getSingleVerse(getPoem(query))))]
+                getSingleVerse(poem)))]
 
     update.inline_query.answer(results, cache_time=0)
 
