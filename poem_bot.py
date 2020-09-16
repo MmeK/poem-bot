@@ -16,7 +16,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
-connection, cursor = None, None
+conn, cursor = None, None
 
 
 # def manage_connection(func):
@@ -26,9 +26,9 @@ connection, cursor = None, None
 #         except(Exception, psycopg2.Error) as error:
 #             print("Error while connecting to PostgreSQL", error)
 #         finally:
-#             if(connection):
+#             if(conn):
 #                 cursor.close()
-#                 connection.close()
+#                 conn.close()
 #     return manage
 
 
@@ -90,16 +90,11 @@ def error(update, context):
 
 
 def main():
-
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-    cursor = connection.cursor()
-    # Create the Updater and pass it your bot's token.
-    # Make sure to set use_context=True to use the new context based callbacks
-    # Post version 12 this will no longer be necessary
+    cursor = conn.cursor()
     updater = Updater(
         TOKEN, use_context=True)
 
-    # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
     # on different commands - answer in Telegram
