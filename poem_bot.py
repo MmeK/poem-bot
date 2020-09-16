@@ -57,6 +57,7 @@ def getPoem(poet):
         where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
         order by poems.id limit 1''')
         poem = cursor.fetchone()
+    print(poem)
     return poem
 
 
