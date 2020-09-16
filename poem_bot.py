@@ -46,12 +46,14 @@ def help_command(update, context):
 
 # @manage_connection
 def getPoem(poet):
-    cursor.execute(
-        '''select poems.poem_text from poems JOIN poets ON poems.poet_id=poets.id
-        where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
-        And poets.poet_name= %s  order by poems.id limit 1''', (poet,))
-    poem = cursor.fetchone()
-    if cursor.rowcount == 0:
+    cursor.execute("SELECT id from poets where poet_name=%s", (poet,))
+    if(cursor.rowcount != 0):
+        cursor.execute(
+            '''select poems.poem_text from poems JOIN poets ON poems.poet_id=poets.id
+            where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
+            And poets.poet_name= %s  order by poems.id limit 1''', (poet,))
+        poem = cursor.fetchone()[0]
+    else:
         cursor.execute(
             '''select poems.poem_text from poems JOIN poets ON poems.poet_id=poets.id
         where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
@@ -71,7 +73,7 @@ def getSingleVerse(poem):
 def inlinequery(update, context):
     """Handle the inline query."""
     query = update.inline_query.query
-    poem = getPoem((query))
+    poem = getPoem(query)
     results = [
         InlineQueryResultArticle(
             id=uuid4(),
