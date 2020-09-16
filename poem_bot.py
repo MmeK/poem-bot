@@ -18,6 +18,26 @@ logger = logging.getLogger(__name__)
 connection, cursor = None, None
 
 
+def manage_connection(func):
+    def manage(*args, **kwargs):
+        try:
+            connection = psycopg2.connect(user="lkwimsvzhvuwnn",
+                                          password="dec3c3c5f27e5384d8962a1211f97b1988254c780be8d233dd9653743df2b581",
+                                          host="ec2-52-200-134-180.compute-1.amazonaws.com",
+                                          port="5432",
+                                          database="d1oveilt1fgmif")
+
+            cursor = connection.cursor()
+            func(*args, **kwargs)
+        except(Exception, psycopg2.Error) as error:
+            print("Error while connecting to PostgreSQL", error)
+        finally:
+            if(connection):
+                cursor.close()
+                connection.close()
+    return manage
+
+
 def start(update, context):
     """Send a message when the command /start is issued."""
     update.message.reply_text('Hi!')
@@ -28,8 +48,8 @@ def help_command(update, context):
     update.message.reply_text('Help!')
 
 
+@manage_connection
 def getPoem(poet):
-    logger.debug(type(cursor))
     cursor.execute(
         '''select poems.poem_text from poems JOIN poets ON poems.poet_id=poets.id
         where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
@@ -73,14 +93,6 @@ def error(update, context):
 
 
 def main():
-
-    connection = psycopg2.connect(user="lkwimsvzhvuwnn",
-                                  password="dec3c3c5f27e5384d8962a1211f97b1988254c780be8d233dd9653743df2b581",
-                                  host="ec2-52-200-134-180.compute-1.amazonaws.com",
-                                  port="5432",
-                                  database="d1oveilt1fgmif")
-
-    cursor = connection.cursor()
 
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
