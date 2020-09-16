@@ -49,7 +49,7 @@ def getPoem(poet):
     cursor.execute(
         '''select poems.poem_text from poems JOIN poets ON poems.poet_id=poets.id
         where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
-        And poets.poet_name= '%s'  order by poems.id limit 1''', (poet,))
+        And poets.poet_name= %s  order by poems.id limit 1''', (poet,))
     poem = cursor.fetchone()
     if cursor.rowcount == 0:
         cursor.execute(
