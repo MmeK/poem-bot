@@ -29,6 +29,7 @@ def help_command(update, context):
 
 
 def getPoem(poet):
+    logger.debug(type(cursor))
     cursor.execute(
         '''select poems.poem_text from poems JOIN poets ON poems.poet_id=poets.id
         where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
