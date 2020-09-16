@@ -9,6 +9,7 @@ import psycopg2
 from web_scraping import scraper
 import os
 
+DATABASE_URL = os.environ['DATABASE_URL']
 PORT = int(os.environ.get('PORT', 5000))
 TOKEN = "1193353650:AAHkN9m1tJ1pqVMBeCWd8grZJ7Jihq75jSo"
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -18,24 +19,17 @@ logger = logging.getLogger(__name__)
 connection, cursor = None, None
 
 
-def manage_connection(func):
-    def manage(*args, **kwargs):
-        try:
-            connection = psycopg2.connect(user="lkwimsvzhvuwnn",
-                                          password="dec3c3c5f27e5384d8962a1211f97b1988254c780be8d233dd9653743df2b581",
-                                          host="ec2-52-200-134-180.compute-1.amazonaws.com",
-                                          port="5432",
-                                          database="d1oveilt1fgmif")
-
-            cursor = connection.cursor()
-            func(*args, **kwargs)
-        except(Exception, psycopg2.Error) as error:
-            print("Error while connecting to PostgreSQL", error)
-        finally:
-            if(connection):
-                cursor.close()
-                connection.close()
-    return manage
+# def manage_connection(func):
+#     def manage(*args, **kwargs):
+#         try:
+#             func(*args, **kwargs)
+#         except(Exception, psycopg2.Error) as error:
+#             print("Error while connecting to PostgreSQL", error)
+#         finally:
+#             if(connection):
+#                 cursor.close()
+#                 connection.close()
+#     return manage
 
 
 def start(update, context):
@@ -61,7 +55,7 @@ def getPoem(poet):
         where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
         order by poems.id limit 1''')
         poem = cursor.fetchone()
-    return "poem"
+    return "poem\npoem\npoem\npoem"
 
 
 def getSingleVerse(poem):
@@ -97,6 +91,8 @@ def error(update, context):
 
 def main():
 
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    cursor = connection.cursor()
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
