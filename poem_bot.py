@@ -42,7 +42,7 @@ def help_command(update, context):
     update.message.reply_text('Help!')
 
 
-@manage_connection
+# @manage_connection
 def getPoem(poet):
     cursor.execute(
         '''select poems.poem_text from poems JOIN poets ON poems.poet_id=poets.id
