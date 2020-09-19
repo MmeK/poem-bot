@@ -45,8 +45,8 @@ def help_command(update, context):
 
 
 # @manage_connection
-def getPoem(poet, word=''):
-    if word != '':
+def getPoem(poet='', word=''):
+    if word == '':
         cursor.execute("SELECT id from poets where poet_name=%s", (poet,))
         if(cursor.rowcount != 0):
             cursor.execute(
@@ -56,7 +56,7 @@ def getPoem(poet, word=''):
             poem = cursor.fetchone()[0]
         else:
             cursor.execute(
-                '''select poems.poem_text from poems JOIN poets ON poems.poet_id=poets.id
+                '''select poems.poem_text from poems
             where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
             order by poems.id limit 1''')
             poem = cursor.fetchone()[0]
@@ -84,7 +84,7 @@ def getPoem(poet, word=''):
     return poem
 
 
-def getSingleVerse(poem):
+def getSingleVerse(poem, word=''):
     try:
         verses = (poem.split("\n\n"))
         return str(verses[random.randint(0, len(verses)-1)])
@@ -96,7 +96,7 @@ def inlinequery(update, context):
     """Handle the inline query."""
     query = update.inline_query.query
     poem = getPoem(query)
-    specific_poem = getPoem()
+    specific_poem = getPoem(poet=query.split[0], word=query.split[1])
     results = [
         InlineQueryResultArticle(
             id=uuid4(),
@@ -112,7 +112,7 @@ def inlinequery(update, context):
             id=uuid4(),
             title="بیت با این کلمه",
             input_message_content=InputTextMessageContent(
-                getSingleVerse(poem)
+                getSingleVerse(specific_poem)
             )
         )]
 
