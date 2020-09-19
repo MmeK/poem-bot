@@ -77,7 +77,7 @@ def getPoem(poet='', word=''):
         #         poem = cursor.fetchone()[0]
         # else:
         cursor.execute(
-            '''select poems.poem_text from poems 
+            '''select poems.poem_text from poems
                 where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems ) AND poems.poem_text ~* %s
                 order by poems.id limit 1''', (" "+word+" ",))
         poem = cursor.fetchone()[0]
@@ -99,31 +99,49 @@ def getSingleVerse(poem='', word=''):
 def inlinequery(update, context):
     """Handle the inline query."""
     query = update.inline_query.query
-    poem = getPoem(poet=query)
-    specific_poem = getPoem(word=query)
-    results = [
-        InlineQueryResultArticle(
+    results = []
+    if(query == ''):
+        poem = getPoem()
+        results.append([InlineQueryResultArticle(
             id=uuid4(),
             title='فال حافظ',
             input_message_content=InputTextMessageContent(getPoem(poet='حافظ'))
         ),
-        InlineQueryResultArticle(
+            InlineQueryResultArticle(
             id=uuid4(),
-            title="شعر از این شاعر",
+            title="شعر تصادفی",
             input_message_content=InputTextMessageContent(
                 poem)),
-        InlineQueryResultArticle(
+            InlineQueryResultArticle(
             id=uuid4(),
-            title="تک‌ بیت از این شاعر",
+            title="تک‌ بیت تصادفی",
             input_message_content=InputTextMessageContent(
-                getSingleVerse(poem))),
-        InlineQueryResultArticle(
-            id=uuid4(),
-            title="بیت با این کلمه",
-            input_message_content=InputTextMessageContent(
-                getSingleVerse(specific_poem, word=query)
-            )
-        )]
+                getSingleVerse(poem)))
+        ])
+    else:
+        cursor.execute("SELECT id from poets where poet_name=%s", (query,))
+        if(cursor.rowcount == 0):
+            specific_poem = getPoem(word=query)
+            results.append(InlineQueryResultArticle(
+                id=uuid4(),
+                title="بیت با این کلمه",
+                input_message_content=InputTextMessageContent(
+                    getSingleVerse(specific_poem, word=query)
+                )))
+        else:
+            poem = getPoem(poet=query)
+            results.append([
+                InlineQueryResultArticle(
+                    id=uuid4(),
+                    title="شعر از این شاعر",
+                    input_message_content=InputTextMessageContent(
+                        poem)),
+                InlineQueryResultArticle(
+                    id=uuid4(),
+                    title="تک‌ بیت از این شاعر",
+                    input_message_content=InputTextMessageContent(
+                        getSingleVerse(poem)))
+            ])
 
     update.inline_query.answer(results, cache_time=0)
 
