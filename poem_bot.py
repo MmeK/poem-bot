@@ -79,7 +79,7 @@ def getPoem(poet='', word=''):
         cursor.execute(
             '''select poems.poem_text from poems 
                 where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems ) AND poems.poem_text ~* %s
-                order by poems.id limit 1''', (word,))
+                order by poems.id limit 1''', (" "+word+" ",))
         poem = cursor.fetchone()[0]
     return poem
 
