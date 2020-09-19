@@ -104,6 +104,11 @@ def inlinequery(update, context):
     results = [
         InlineQueryResultArticle(
             id=uuid4(),
+            title='فال حافظ',
+            input_message_content=InputTextMessageContent(getPoem(poet='حافظ'))
+        ),
+        InlineQueryResultArticle(
+            id=uuid4(),
             title="شعر از این شاعر",
             input_message_content=InputTextMessageContent(
                 poem)),
