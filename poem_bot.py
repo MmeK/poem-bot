@@ -102,7 +102,7 @@ def inlinequery(update, context):
     results = []
     if(query == ''):
         poem = getPoem()
-        results.append([InlineQueryResultArticle(
+        results.extend([InlineQueryResultArticle(
             id=uuid4(),
             title='فال حافظ',
             input_message_content=InputTextMessageContent(getPoem(poet='حافظ'))
@@ -130,7 +130,7 @@ def inlinequery(update, context):
                 )))
         else:
             poem = getPoem(poet=query)
-            results.append([
+            results.extend([
                 InlineQueryResultArticle(
                     id=uuid4(),
                     title="شعر از این شاعر",
@@ -142,7 +142,7 @@ def inlinequery(update, context):
                     input_message_content=InputTextMessageContent(
                         getSingleVerse(poem)))
             ])
-    print(results)
+    results.
     update.inline_query.answer(results, cache_time=0)
 
 
