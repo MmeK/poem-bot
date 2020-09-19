@@ -98,7 +98,7 @@ def getSingleVerse(poem='', word=''):
 
 def inlinequery(update, context):
     """Handle the inline query."""
-    query = update.inline_query.query
+    query = update.inline_query.query.strip()
     results = []
     if(query == ''):
         poem = getPoem()
