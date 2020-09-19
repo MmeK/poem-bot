@@ -142,7 +142,6 @@ def inlinequery(update, context):
                     input_message_content=InputTextMessageContent(
                         getSingleVerse(poem)))
             ])
-    results.
     update.inline_query.answer(results, cache_time=0)
 
 
