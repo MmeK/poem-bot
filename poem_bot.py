@@ -90,7 +90,7 @@ def getSingleVerse(poem='', word=''):
         return str(verses[random.randint(0, len(verses)-1)])
     else:
         verses = (poem.split("\n\n"))
-        for verse in verse:
+        for verse in verses:
             if word in verse:
                 return verse
         return str(verses[random.randint(0, len(verses)-1)])
