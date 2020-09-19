@@ -61,58 +61,62 @@ def getPoem(poet='', word=''):
             order by poems.id limit 1''')
             poem = cursor.fetchone()[0]
     else:
-        if poet != '':
-            cursor.execute("SELECT id from poets where poet_name=%s", (poet,))
-            if(cursor.rowcount != 0):
-                cursor.execute(
-                    '''select poems.poem_text from poems JOIN poets ON poems.poet_id=poets.id
-                    where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
-                    And poets.poet_name= %s And poems.poem_text ~* %s order by poems.id limit 1''', (poet, word))
-                poem = cursor.fetchone()[0]
-            else:
-                cursor.execute(
-                    '''select poems.poem_text from poems 
+        # if poet != '':
+        #     cursor.execute("SELECT id from poets where poet_name=%s", (poet,))
+        #     if(cursor.rowcount != 0):
+        #         cursor.execute(
+        #             '''select poems.poem_text from poems JOIN poets ON poems.poet_id=poets.id
+        #             where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
+        #             And poets.poet_name= %s And poems.poem_text ~* %s order by poems.id limit 1''', (poet, word))
+        #         poem = cursor.fetchone()[0]
+        #     else:
+        #         cursor.execute(
+        #             '''select poems.poem_text from poems
+        #         where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems ) AND poems.poem_text ~* %s
+        #         order by poems.id limit 1''', (word,))
+        #         poem = cursor.fetchone()[0]
+        # else:
+        cursor.execute(
+            '''select poems.poem_text from poems 
                 where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems ) AND poems.poem_text ~* %s
                 order by poems.id limit 1''', (word,))
-                poem = cursor.fetchone()[0]
-        else:
-            cursor.execute(
-                '''select poems.poem_text from poems 
-                where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems ) AND poems.poem_text ~* %s
-                order by poems.id limit 1''', (word,))
-            poem = cursor.fetchone()[0]
+        poem = cursor.fetchone()[0]
     return poem
 
 
-def getSingleVerse(poem, word=''):
-    try:
+def getSingleVerse(poem='', word=''):
+    if word == '':
         verses = (poem.split("\n\n"))
         return str(verses[random.randint(0, len(verses)-1)])
-    except Exception:
-        return poem
+    else:
+        verses = (poem.split("\n\n"))
+        for verse in verse:
+            if word in verse:
+                return verse
+        return str(verses[random.randint(0, len(verses)-1)])
 
 
 def inlinequery(update, context):
     """Handle the inline query."""
     query = update.inline_query.query
-    poem = getPoem(query)
-    specific_poem = getPoem(poet=query.split(',')[0], word=query.split(',')[1])
+    poem = getPoem(poet=query)
+    specific_poem = getPoem(word=query)
     results = [
         InlineQueryResultArticle(
             id=uuid4(),
-            title="شعر",
+            title="شعر از این شاعر",
             input_message_content=InputTextMessageContent(
                 poem)),
         InlineQueryResultArticle(
             id=uuid4(),
-            title="تک‌ بیت",
+            title="تک‌ بیت از این شاعر",
             input_message_content=InputTextMessageContent(
                 getSingleVerse(poem))),
         InlineQueryResultArticle(
             id=uuid4(),
             title="بیت با این کلمه",
             input_message_content=InputTextMessageContent(
-                getSingleVerse(specific_poem)
+                getSingleVerse(specific_poem, word=query)
             )
         )]
 
