@@ -96,7 +96,7 @@ def inlinequery(update, context):
     """Handle the inline query."""
     query = update.inline_query.query
     poem = getPoem(query)
-    specific_poem = getPoem(poet=query.split[0], word=query.split[1])
+    specific_poem = getPoem(poet=query.split(',')[0], word=query.split(',')[1])
     results = [
         InlineQueryResultArticle(
             id=uuid4(),
