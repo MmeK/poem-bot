@@ -46,41 +46,48 @@ def help_command(update, context):
 
 # @manage_connection
 def getPoem(poet='', word=''):
+    poem_ids = []
     if word == '':
         cursor.execute("SELECT id from poets where poet_name=%s", (poet,))
         if(cursor.rowcount != 0):
-            cursor.execute(
-                '''select poems.poem_text from poems JOIN poets ON poems.poet_id=poets.id
-                where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
-                And poets.poet_name= %s  order by poems.id limit 1''', (poet,))
-            poem = cursor.fetchone()[0]
+            # cursor.execute(
+            #     '''select poems.poem_text from poems JOIN poets ON poems.poet_id=poets.id
+            #     where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
+            #     And poets.poet_name= %s  order by poems.id limit 1''', (poet,))
+            # poem = cursor.fetchone()[0]
+
+             cursor.execute(
+            '''Select poems.id from poems,poets where poets.poet_name = %s and poems.poet_id=poets.id order by poems.id
+            ''', (poet,))
+            poem_ids = cursor.fetchall()
         else:
-            cursor.execute(
-                '''select poems.poem_text from poems
-            where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
-            order by poems.id limit 1''')
-            poem = cursor.fetchone()[0]
+            # cursor.execute(
+            #     '''select poems.poem_text from poems
+            # where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
+            # order by poems.id limit 1''')
+            # poem = cursor.fetchone()[0]
+            cursor.execute('''select id from poems order by id
+            ''')
+            poem_ids=cursor.fetchall()
+
     else:
-        # if poet != '':
-        #     cursor.execute("SELECT id from poets where poet_name=%s", (poet,))
-        #     if(cursor.rowcount != 0):
-        #         cursor.execute(
-        #             '''select poems.poem_text from poems JOIN poets ON poems.poet_id=poets.id
-        #             where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems )
-        #             And poets.poet_name= %s And poems.poem_text ~* %s order by poems.id limit 1''', (poet, word))
-        #         poem = cursor.fetchone()[0]
-        #     else:
-        #         cursor.execute(
-        #             '''select poems.poem_text from poems
+        
+       
+        # cursor.execute(
+        #     '''select poems.poem_text from poems
         #         where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems ) AND poems.poem_text ~* %s
-        #         order by poems.id limit 1''', (word,))
-        #         poem = cursor.fetchone()[0]
-        # else:
+        #         order by poems.id limit 1''', (" "+word+" ",))
+        # poem = cursor.fetchone()[0]
         cursor.execute(
-            '''select poems.poem_text from poems
-                where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems ) AND poems.poem_text ~* %s
-                order by poems.id limit 1''', (" "+word+" ",))
-        poem = cursor.fetchone()[0]
+            '''select poems.id from poems
+                where poems.poem_text ~* %s
+                order by poems.id ''', (" "+word+" ",))
+        poem_ids=cursor.fetchall()
+    id = random.choice(poem_ids)
+    cursor.execute('''
+    select poem_text from poems where id = %s limit 1
+    ''',(id,))
+    poem = cursor.fetchone()
     return poem
 
 
@@ -93,7 +100,9 @@ def getSingleVerse(poem='', word=''):
         for verse in verses:
             if word in verse:
                 return verse
-        return str(verses[random.randint(0, len(verses)-1)])
+        verse = str(verses[random.randint(0, len(verses)-1)])
+        verse.replace()
+        return
 
 
 def inlinequery(update, context):
@@ -119,29 +128,32 @@ def inlinequery(update, context):
                 getSingleVerse(poem)))
         ])
     else:
-        cursor.execute("SELECT id from poets where poet_name=%s", (query,))
-        if(cursor.rowcount == 0):
-            specific_poem = getPoem(word=query)
-            results.append(InlineQueryResultArticle(
-                id=uuid4(),
-                title="بیت با این کلمه",
-                input_message_content=InputTextMessageContent(
-                    getSingleVerse(specific_poem, word=query)
-                )))
+        if len(query) == 1:
+
         else:
-            poem = getPoem(poet=query)
-            results.extend([
-                InlineQueryResultArticle(
+            cursor.execute("SELECT id from poets where poet_name=%s", (query,))
+            if(cursor.rowcount == 0):
+                specific_poem = getPoem(word=query)
+                results.append(InlineQueryResultArticle(
                     id=uuid4(),
-                    title="شعر از این شاعر",
+                    title="بیت با این کلمه",
                     input_message_content=InputTextMessageContent(
-                        poem)),
-                InlineQueryResultArticle(
-                    id=uuid4(),
-                    title="تک‌ بیت از این شاعر",
-                    input_message_content=InputTextMessageContent(
-                        getSingleVerse(poem)))
-            ])
+                        getSingleVerse(specific_poem, word=query)
+                    )))
+            else:
+                poem = getPoem(poet=query)
+                results.extend([
+                    InlineQueryResultArticle(
+                        id=uuid4(),
+                        title="شعر از این شاعر",
+                        input_message_content=InputTextMessageContent(
+                            poem)),
+                    InlineQueryResultArticle(
+                        id=uuid4(),
+                        title="تک‌ بیت از این شاعر",
+                        input_message_content=InputTextMessageContent(
+                            getSingleVerse(poem)))
+                ])
     print(results)
     update.inline_query.answer(results, cache_time=0)
 
