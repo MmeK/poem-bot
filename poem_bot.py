@@ -128,7 +128,7 @@ def inlinequery(update, context):
         ])
     else:
         if len(query) == 1:
-
+            pass
         else:
             cursor.execute("SELECT id from poets where poet_name=%s", (query,))
             if(cursor.rowcount == 0):
