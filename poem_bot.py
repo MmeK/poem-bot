@@ -47,7 +47,7 @@ def help_command(update, context):
 # @manage_connection
 def getPoem(poet='', word='', letter=''):
     poem_ids = []
-    if letter == '':
+    if letter != '':
         cursor.execute(
             '''select poems.id from poems
                     where poems.poem_text ~* %s
