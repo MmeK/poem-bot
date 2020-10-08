@@ -87,7 +87,7 @@ def getPoem(poet='', word=''):
     select poem_text from poems where id = %s limit 1
     ''', (id,))
     poem = cursor.fetchone()
-    return poem
+    return poem[0]
 
 
 def getSingleVerse(poem='', word=''):
