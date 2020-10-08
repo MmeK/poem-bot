@@ -97,18 +97,23 @@ def getPoem(poet='', word='', letter=''):
     return poem[0]
 
 
-def getSingleVerse(poem='', word=''):
-    if word == '':
-        verses = (poem.split("\n\n"))
-        return str(verses[random.randint(0, len(verses)-1)])
+def getSingleVerse(poem='', word='', letter=''):
+    verses = (poem.split("\n\n"))
+    if letter == '':
+        if word == '':
+            return str(verses[random.randint(0, len(verses)-1)])
+        else:
+            for verse in verses:
+                if word in verse:
+                    return verse.replace("\""+word+"\"")
+            verse = str(verses[random.randint(0, len(verses)-1)])
+            verse.replace(word, "\""+word+"\"")
+            return verse
     else:
-        verses = (poem.split("\n\n"))
         for verse in verses:
-            if word in verse:
+            if verse.startswith(letter):
                 return verse
-        verse = str(verses[random.randint(0, len(verses)-1)])
-        verse.replace(word, "\""+word+"\"")
-        return
+        return str(verses[random.randint(0, len(verses)-1)])
 
 
 def inlinequery(update, context):
