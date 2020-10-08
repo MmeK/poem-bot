@@ -115,6 +115,12 @@ def inlinequery(update, context):
     """Handle the inline query."""
     query = update.inline_query.query.strip()
     results = []
+    results.append(InlineQueryResultArticle(
+        id=uuid4(),
+        title=len(query),
+        input_message_content=InputTextMessageContent(
+            len(query)
+        )))
     if len(query) == 1:
         pass
     elif len(query) >= 3:
@@ -141,7 +147,7 @@ def inlinequery(update, context):
                     input_message_content=InputTextMessageContent(
                         getSingleVerse(poem)))
             ])
-    elif(query == ''):
+    else:
         poem = getPoem()
         results.extend([InlineQueryResultArticle(
             id=uuid4(),
