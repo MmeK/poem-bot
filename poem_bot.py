@@ -105,7 +105,7 @@ def getSingleVerse(poem='', word='', letter=''):
         else:
             for verse in verses:
                 if word in verse:
-                    return verse.replace("\""+word+"\"")
+                    return verse.replace(word, "\""+word+"\"")
             verse = str(verses[random.randint(0, len(verses)-1)])
             verse.replace(word, "\""+word+"\"")
             return verse
