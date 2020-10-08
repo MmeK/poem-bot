@@ -120,18 +120,12 @@ def inlinequery(update, context):
     """Handle the inline query."""
     query = update.inline_query.query.strip()
     results = []
-    results.append(InlineQueryResultArticle(
-        id=uuid4(),
-        title=len(query),
-        input_message_content=InputTextMessageContent(
-            len(query)
-        )))
     if len(query) == 1:
         results.append(InlineQueryResultArticle(
             id=uuid4(),
             title="مشاعره",
             input_message_content=InputTextMessageContent(
-                getSingleVerse(getPoem(letter=query))
+                getSingleVerse(getPoem(letter=query), letter=query)
             )))
     elif len(query) >= 3:
         cursor.execute("SELECT id from poets where poet_name=%s", (query,))
