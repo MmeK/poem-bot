@@ -56,8 +56,8 @@ def getPoem(poet='', word=''):
             #     And poets.poet_name= %s  order by poems.id limit 1''', (poet,))
             # poem = cursor.fetchone()[0]
 
-             cursor.execute(
-            '''Select poems.id from poems,poets where poets.poet_name = %s and poems.poet_id=poets.id order by poems.id
+            cursor.execute(
+                '''Select poems.id from poems,poets where poets.poet_name = %s and poems.poet_id=poets.id order by poems.id
             ''', (poet,))
             poem_ids = cursor.fetchall()
         else:
@@ -68,11 +68,10 @@ def getPoem(poet='', word=''):
             # poem = cursor.fetchone()[0]
             cursor.execute('''select id from poems order by id
             ''')
-            poem_ids=cursor.fetchall()
+            poem_ids = cursor.fetchall()
 
     else:
-        
-       
+
         # cursor.execute(
         #     '''select poems.poem_text from poems
         #         where poems.id >= ( select random()*(max(poems.id)-min(poems.id)) + min(poems.id) from poems ) AND poems.poem_text ~* %s
@@ -82,11 +81,11 @@ def getPoem(poet='', word=''):
             '''select poems.id from poems
                 where poems.poem_text ~* %s
                 order by poems.id ''', (" "+word+" ",))
-        poem_ids=cursor.fetchall()
+        poem_ids = cursor.fetchall()
     id = random.choice(poem_ids)
     cursor.execute('''
     select poem_text from poems where id = %s limit 1
-    ''',(id,))
+    ''', (id,))
     poem = cursor.fetchone()
     return poem
 
