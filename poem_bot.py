@@ -50,8 +50,8 @@ def getPoem(poet='', word='', letter=''):
     if letter == '':
         cursor.execute(
             '''select poems.id from poems
-                    where poems.poem_text ~* \n%s
-                    order by poems.id ''', (letter,))
+                    where poems.poem_text ~* %s
+                    order by poems.id ''', ('\n\n'+letter,))
         poem_ids = cursor.fetchall()
     else:
         if word == '':
