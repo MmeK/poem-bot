@@ -36,7 +36,8 @@ cursor = conn.cursor()
 
 def start(update, context):
     """Send a message when the command /start is issued."""
-    update.message.reply_text('Hi!')
+    update.message.reply_text('سلام!')
+    update.message.reply_text('به ربات شعر و ادبیات خوش اومدید')
 
 
 def help_command(update, context):
@@ -137,6 +138,13 @@ def inlinequery(update, context):
                 input_message_content=InputTextMessageContent(
                     getSingleVerse(specific_poem, word=query)
                 )))
+            results.append(InlineQueryResultArticle(
+                id=uuid4(),
+                title="شعر با این  کلمه"
+                input_message_content=InputTextMessageContent(
+                    specific_poem
+                )
+            ))
         else:
             poem = getPoem(poet=query)
             results.extend([
