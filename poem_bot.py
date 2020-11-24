@@ -140,7 +140,7 @@ def inlinequery(update, context):
                 )))
             results.append(InlineQueryResultArticle(
                 id=uuid4(),
-                title="شعر با این  کلمه"
+                title="شعر با این  کلمه",
                 input_message_content=InputTextMessageContent(
                     specific_poem
                 )
