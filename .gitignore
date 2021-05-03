@@ -1,0 +1,3 @@
+Procfile
+web_scraping/__pycache__
+config.py

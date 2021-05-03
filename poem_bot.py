@@ -5,13 +5,14 @@ from telegram import InlineQueryResultArticle, ParseMode, \
 from uuid import uuid4
 import logging
 import random
+import config
 import psycopg2
 from web_scraping import scraper
 import os
 
-DATABASE_URL = os.environ['DATABASE_URL']
-PORT = int(os.environ.get('PORT', 5000))
-TOKEN = "1193353650:AAHkN9m1tJ1pqVMBeCWd8grZJ7Jihq75jSo"
+DATABASE_URL = config.DATABASE_URL
+PORT = config.PORT
+TOKEN = config.TOKEN
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
